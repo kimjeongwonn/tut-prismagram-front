@@ -44,7 +44,12 @@ export const Link = styled.span`
   cursor: pointer;
 `;
 
-export const AlertText = styled.span`
+export const NotificationContainer = styled.div`
+  height: 100%;
+`;
+
+export const AlertText = styled.div`
   color: ${({ theme }) => theme.redColor};
   font-size: 12px;
+  text-align: center;
 `;

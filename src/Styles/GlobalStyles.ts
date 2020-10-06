@@ -17,6 +17,16 @@ a {
   color: ${({ theme }) => theme.blueColor};
   text-decoration: none;
 }
+
+input {
+  border: ${({ theme }) => theme.boxBorder};
+  border-radius: ${({ theme }) => theme.borderRadius};
+  background-color: ${({ theme }) => theme.bgColor};
+  height: 40px;
+  padding: 0 15px;
+  font-size: 12px;
+}
+
 input:focus {
   outline: none;
 }
