@@ -5,6 +5,7 @@ export const SEE_FEED = gql`
     seeFeed {
       id
       user {
+        id
         profileImage
         username
       }
@@ -13,6 +14,16 @@ export const SEE_FEED = gql`
       }
       location
       caption
+      isLike
+      likesCount
+      comments {
+        user {
+          id
+          profileImage
+          username
+        }
+        text
+      }
     }
   }
 `;

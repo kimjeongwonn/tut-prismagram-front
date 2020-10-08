@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { ME } from './query';
-import { Logo, Compass, HeartEmpty, User } from './Icons';
+import { Logo, Compass, HeartEmpty, User } from '../Icons';
 import { Link, withRouter } from 'react-router-dom';
 import useInput from '../../Hooks/useInput';
 import { HeaderContent, HeaderWrapper, HeaderColumn, SearchBar, HeaderLink } from './styles';
