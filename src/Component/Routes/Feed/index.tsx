@@ -1,6 +1,7 @@
 import React from 'react';
 import { SEE_FEED } from './query';
 import Post from '../../Post';
+import Loader from '../../Loader';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 
@@ -26,8 +27,9 @@ export default () => {
 
   return (
     <FeedWrapper>
-      {feedLoading && 'Loading...'}
-      {!feedLoading && (
+      {feedLoading ? (
+        <Loader />
+      ) : (
         <PostWrapper>
           {feeds?.map((feed) => (
             <Post data={feed} />

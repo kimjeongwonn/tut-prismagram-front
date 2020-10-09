@@ -16,7 +16,9 @@ export const SEE_FEED = gql`
       caption
       isLike
       likesCount
-      comments {
+      commentsCount
+      comments(last: 2) {
+        id
         user {
           id
           profileImage
@@ -24,6 +26,7 @@ export const SEE_FEED = gql`
         }
         text
       }
+      postAt
     }
   }
 `;
