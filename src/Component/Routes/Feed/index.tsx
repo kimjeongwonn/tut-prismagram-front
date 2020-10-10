@@ -32,7 +32,7 @@ export default () => {
       ) : (
         <PostWrapper>
           {feeds?.map((feed) => (
-            <Post data={feed} />
+            <Post key={feed?.id} data={feed} />
           ))}
         </PostWrapper>
       )}

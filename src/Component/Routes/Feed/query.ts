@@ -10,6 +10,7 @@ export const SEE_FEED = gql`
         username
       }
       files {
+        id
         url
       }
       location

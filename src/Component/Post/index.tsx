@@ -1,11 +1,11 @@
-import React from 'react';
-import { useMutation, gql } from '@apollo/client';
+import React, {useState} from 'react';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import styled from 'styled-components';
 import useInput from '../../Hooks/useInput';
 import { Link } from 'react-router-dom';
 import ProfileImage from '../ProfileImage';
 import { HeartEmpty, HeartFull, CommentIcon } from '../Icons';
-import { TOGGLE_LIKE, ADD_COMMENT } from './query';
+import { TOGGLE_LIKE, ADD_COMMENT, READ_COMMENTS } from './query';
 import moment from 'moment';
 import 'moment/locale/ko';
 
@@ -74,6 +74,7 @@ const CommentCount = styled.div`
   color: ${({ theme }) => theme.darkGreyColor};
   margin-top: 10px;
   font-weight: 600;
+  cursor: pointer;
 `;
 
 const Comment = styled.li`
@@ -90,21 +91,30 @@ const CommentInputContainer = styled.input`
   font-size: 14px;
 `;
 
-const Post: React.FC<{ data?: NexusGenFieldTypes['Post'] }> = ({ data }) => {
+const Post: React.FC<{ data: NexusGenFieldTypes['Post'] }> = ({ data }) => {
   const [comment, setComment] = useInput('');
+  const [readableCommnents, setReadableCommnents] = useState<{data: NexusGenFieldTypes['Comment'][]; open:boolean}>({data: [], open: false});
+  
+  const [loadAllComments] = useLazyQuery<{seePost: NexusGenFieldTypes['Post']}>(READ_COMMENTS, {
+    variables: {postId: data?.id},
+    onCompleted(loadData) {
+      setReadableCommnents(existing => ({...existing, data: [...loadData.seePost.comments]}))
+    },
+
+  })
 
   const [submitCommentMutation] = useMutation<{ addComment: NexusGenFieldTypes['Comment'] }>(ADD_COMMENT, {
     variables: {
       postId: data?.id,
       text: comment.value,
     },
-    update(cache, { data: newCommnetData }) {
-      cache.modify({
+    update(cache, { data: newCommentData }) {
+    setReadableCommnents(existing => ({...existing, data:[...existing.data, newCommentData?.addComment!]}));
+      cache.modify({ 
         id: cache.identify(data!),
         fields: {
           comments(existing: NexusGenFieldTypes['Comment'][]) {
-            const result = existing.slice(1);
-            return [...result, newCommnetData?.addComment];
+            return [...existing, newCommentData?.addComment];
           },
           commentsCount(existing) {
             return existing + 1;
@@ -154,6 +164,12 @@ const Post: React.FC<{ data?: NexusGenFieldTypes['Post'] }> = ({ data }) => {
     submitCommentMutation();
     setComment('');
   };
+  const AllCommentsHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.preventDefault();
+    if (!readableCommnents.open) loadAllComments();
+    setReadableCommnents(existing => ({...existing, open: !existing.open}));
+    
+  }
 
   return (
     <PostWrapper>
@@ -167,7 +183,7 @@ const Post: React.FC<{ data?: NexusGenFieldTypes['Post'] }> = ({ data }) => {
       </AuthorContainer>
       {/* 이미지 컨테이너 */}
       {data?.files.map((img) => (
-        <img src={img.url} alt={undefined} style={{ width: '100%' }} />
+        <img key={img.id} src={img.url} alt={undefined} style={{ width: '100%' }} />
       ))}
       {/* 이미지 컨테이너 끝 */}
       <IconContainer>
@@ -187,20 +203,18 @@ const Post: React.FC<{ data?: NexusGenFieldTypes['Post'] }> = ({ data }) => {
         {data?.caption}
         <CommentContainer>
           {data?.commentsCount && data?.commentsCount > 2 ? (
-            <CommentCount>댓글 {data?.commentsCount}개 모두 보기</CommentCount>
-          ) : null}
-          {data?.comments
-            .map((comment) => {
-              return (
-                <Comment key={comment.id}>
-                  <AuthorName>
-                    <AuthorLink to={`/profile/${comment.user.username}`}>{comment.user.username}</AuthorLink>
-                  </AuthorName>
-                  {comment.text}
-                </Comment>
-              );
-            })
-            .reverse()}
+            <CommentCount onClick={AllCommentsHandler}>{!readableCommnents.open ? `댓글 ${data?.commentsCount}개 모두 보기` : `접기`}</CommentCount>
+          ): null}
+          {(readableCommnents.open ? readableCommnents.data : data?.comments).map((comment) => {
+            return (
+              <Comment key={comment.id}>
+                <AuthorName>
+                  <AuthorLink to={`/profile/${comment.user.username}`}>{comment.user.username}</AuthorLink>
+                </AuthorName>
+                {comment.text}
+              </Comment>
+            );
+          })}
         </CommentContainer>
         <TimeStamp>{moment(data?.postAt).fromNow()}</TimeStamp>
       </TextWrapper>
