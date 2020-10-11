@@ -15,6 +15,6 @@ const Image = styled.div<{ img: string | null; size: number; margin: string }>`
   background-position: center center;
 `;
 
-export default ({ img, size = 32, margin = '0' }: { img: string | null; size: number; margin: string }) => {
+export default ({ img, size = 32, margin = '0' }: { img: string | null; size: number; margin?: string }) => {
   return <Image img={img} size={size} margin={margin} />;
 };

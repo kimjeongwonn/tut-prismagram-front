@@ -1,95 +1,14 @@
 import React, {useState} from 'react';
 import { useMutation, useLazyQuery } from '@apollo/client';
-import styled from 'styled-components';
 import useInput from '../../Hooks/useInput';
-import { Link } from 'react-router-dom';
 import ProfileImage from '../ProfileImage';
 import { HeartEmpty, HeartFull, CommentIcon } from '../Icons';
 import { TOGGLE_LIKE, ADD_COMMENT, READ_COMMENTS } from './query';
 import moment from 'moment';
 import 'moment/locale/ko';
+import * as C from './styled';
 
 moment.locale('ko');
-
-const PostWrapper = styled.div`
-  &:not(:first-child) {
-    margin-top: 40px;
-  }
-  ${({ theme }) => theme.whiteBox}
-`;
-
-const AuthorContainer = styled.div`
-  height: 60px;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-`;
-
-const AuthorName = styled.span`
-  font-weight: 800;
-  font-size: 14px;
-  padding-right: 5px;
-`;
-
-const LikeCounter = styled.div`
-  font-weight: 800;
-  font-size: 14px;
-  padding-bottom: 10px;
-`;
-
-const IconContainer = styled.div`
-  display: flex;
-  padding: 10px;
-  align-items: center;
-`;
-
-const PostButton = styled.button`
-  border: none;
-  background: none;
-  cursor: pointer;
-  &:focus {
-    outline: none;
-  }
-`;
-
-const TextWrapper = styled.div`
-  padding: 0 15px 15px 15px;
-`;
-
-const AuthorLink = styled(Link)`
-  color: ${({ theme }) => theme.blackColor};
-`;
-
-const TimeStamp = styled.div`
-  color: ${({ theme }) => theme.darkGreyColor};
-  font-size: 12px;
-  margin-top: 10px;
-`;
-
-const CommentContainer = styled.ul`
-  list-style-type: none;
-`;
-
-const CommentCount = styled.div`
-  color: ${({ theme }) => theme.darkGreyColor};
-  margin-top: 10px;
-  font-weight: 600;
-  cursor: pointer;
-`;
-
-const Comment = styled.li`
-  margin-top: 8px;
-`;
-
-const CommentInputContainer = styled.input`
-  border: 0;
-  border-top: ${({ theme }) => theme.boxBorder};
-  background: none;
-  width: 100%;
-  border-radius: 0;
-  padding: 30px 15px;
-  font-size: 14px;
-`;
 
 const Post: React.FC<{ data: NexusGenFieldTypes['Post'] }> = ({ data }) => {
   const [comment, setComment] = useInput('');
@@ -172,56 +91,56 @@ const Post: React.FC<{ data: NexusGenFieldTypes['Post'] }> = ({ data }) => {
   }
 
   return (
-    <PostWrapper>
-      <AuthorContainer>
-        <AuthorLink to={`/profile/${data?.user.username}`}>
+    <C.PostWrapper>
+      <C.AuthorContainer>
+        <C.AuthorLink to={`/profile/${data?.user.username}`}>
           <ProfileImage img={data?.user?.profileImage ?? null} size={32} margin={'0 10px'} />
-        </AuthorLink>
-        <AuthorLink to={`/profile/${data?.user.username}`}>
-          <AuthorName>{data?.user?.username}</AuthorName>
-        </AuthorLink>
-      </AuthorContainer>
+        </C.AuthorLink>
+        <C.AuthorLink to={`/profile/${data?.user.username}`}>
+          <C.AuthorName>{data?.user?.username}</C.AuthorName>
+        </C.AuthorLink>
+      </C.AuthorContainer>
       {/* 이미지 컨테이너 */}
       {data?.files.map((img) => (
-        <img key={img.id} src={img.url} alt={undefined} style={{ width: '100%' }} />
+        <img key={img.id} src={img.url} alt={'post_image'} style={{ width: '100%' }} />
       ))}
       {/* 이미지 컨테이너 끝 */}
-      <IconContainer>
-        <PostButton onClick={toggleLikeEvent}>
+      <C.IconContainer>
+        <C.PostButton onClick={toggleLikeEvent}>
           {data?.isLike && <HeartFull />}
           {!data?.isLike && <HeartEmpty />}
-        </PostButton>
-        <PostButton>
+        </C.PostButton>
+        <C.PostButton>
           <CommentIcon />
-        </PostButton>
-      </IconContainer>
-      <TextWrapper>
-        <LikeCounter>좋아요 {data?.likesCount}개</LikeCounter>
-        <AuthorLink to={`/profile/${data?.user.username}`}>
-          <AuthorName>{data?.user.username}</AuthorName>
-        </AuthorLink>
+        </C.PostButton>
+      </C.IconContainer>
+      <C.TextWrapper>
+        <C.LikeCounter>좋아요 {data?.likesCount}개</C.LikeCounter>
+        <C.AuthorLink to={`/profile/${data?.user.username}`}>
+          <C.AuthorName>{data?.user.username}</C.AuthorName>
+        </C.AuthorLink>
         {data?.caption}
-        <CommentContainer>
+        <C.CommentContainer>
           {data?.commentsCount && data?.commentsCount > 2 ? (
-            <CommentCount onClick={AllCommentsHandler}>{!readableCommnents.open ? `댓글 ${data?.commentsCount}개 모두 보기` : `접기`}</CommentCount>
+            <C.CommentCount onClick={AllCommentsHandler}>{!readableCommnents.open ? `댓글 ${data?.commentsCount}개 모두 보기` : `접기`}</C.CommentCount>
           ): null}
           {(readableCommnents.open ? readableCommnents.data : data?.comments).map((comment) => {
             return (
-              <Comment key={comment.id}>
-                <AuthorName>
-                  <AuthorLink to={`/profile/${comment.user.username}`}>{comment.user.username}</AuthorLink>
-                </AuthorName>
+              <C.Comment key={comment.id}>
+                <C.AuthorName>
+                  <C.AuthorLink to={`/profile/${comment.user.username}`}>{comment.user.username}</C.AuthorLink>
+                </C.AuthorName>
                 {comment.text}
-              </Comment>
+              </C.Comment>
             );
           })}
-        </CommentContainer>
-        <TimeStamp>{moment(data?.postAt).fromNow()}</TimeStamp>
-      </TextWrapper>
+        </C.CommentContainer>
+        <C.TimeStamp>{moment(data?.postAt).fromNow()}</C.TimeStamp>
+      </C.TextWrapper>
       <form onSubmit={submitComment}>
-        <CommentInputContainer placeholder="댓글 달기..." {...comment}></CommentInputContainer>
+        <C.CommentInputContainer placeholder="댓글 달기..." {...comment}></C.CommentInputContainer>
       </form>
-    </PostWrapper>
+    </C.PostWrapper>
   );
 };
 
