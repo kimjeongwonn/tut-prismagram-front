@@ -12,6 +12,14 @@ export const SEARCH_QUERY = gql`
     }
     searchPost(keyword: $keyword) {
       id
+      files {
+        id
+        url
+      }
+      user {
+        id
+        username
+      }
       likesCount
       commentsCount
     }

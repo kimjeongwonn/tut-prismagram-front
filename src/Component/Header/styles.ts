@@ -8,7 +8,7 @@ export const HeaderWrapper = styled.div`
   width: 100%;
   background-color: white;
   padding: 15px 0;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
   border-bottom: ${({ theme }) => theme.boxBorder};
 `;
 export const HeaderContent = styled.header`

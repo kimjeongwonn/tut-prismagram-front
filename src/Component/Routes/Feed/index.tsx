@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SEE_FEED } from './query';
 import Post from '../../Post';
 import Loader from '../../Loader';
@@ -22,8 +22,17 @@ const MyProfile = styled.div`
 `;
 
 export default () => {
-  const { data: feedData, loading: feedLoading } = useQuery<{ seeFeed: NexusGenFieldTypes['Post'][] }>(SEE_FEED);
+  const { data: feedData, loading: feedLoading, refetch } = useQuery<{ seeFeed: NexusGenFieldTypes['Post'][] }>(
+    SEE_FEED,
+    {
+      partialRefetch: true,
+    }
+  );
   const feeds = feedData?.seeFeed;
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   return (
     <FeedWrapper>

@@ -6,19 +6,7 @@ const IS_LOGGED_IN = gql`
   }
 `;
 
-const cache = new InMemoryCache({
-  typePolicies: {
-    Post: {
-      fields: {
-        comments: {
-          merge(existing = [], incoming: NexusGenFieldTypes['Comment'][]) {
-            return [...existing, ...incoming];
-          },
-        },
-      },
-    },
-  },
-});
+const cache = new InMemoryCache();
 
 cache.writeQuery({
   query: IS_LOGGED_IN,
